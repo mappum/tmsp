@@ -1,5 +1,14 @@
 # Introducing the Tendermint Socket Protocol (TMSP)
 
+Contents:
+
+- Motivation
+- TMSP Overview
+- Dummy TMSP Example (golang)
+- Another TMSP Example (in golang, python, javascript)
+- Running Tendermint 
+- Deploy a Tendermint Testnet
+
 # Motivation
 
 After many months of fussing around with blockchain design, 
@@ -69,7 +78,7 @@ Converesely, a `rollback` message tells the application to go back to the latest
 
 Ok, let's do an example.
 
-Make sure you have go installed and put `$GOPATH/bin` on your `$PATH`.
+Make sure you [have golang installed](https://golang.org/doc/install) and put `$GOPATH/bin` on your `$PATH`.
 
 Install the tmsp tool and example applications:
 
@@ -77,11 +86,30 @@ Install the tmsp tool and example applications:
 go get github.com/tendermint/tmsp/cmd/...
 ```
 
-Now run `tmsp --help` to see the list of commands.
+Now run `tmsp --help` to see the list of commands:
+
+```
+COMMANDS:
+   batch	Run a batch of tmsp commands against an application
+   console	Start an interactive tmsp console for multiple commands
+   echo		Have the application echo a message
+   info		Get some info about the application
+   set_option	Set an option on the application
+   append_tx	Append a new tx to application
+   get_hash	Get application Merkle root hash
+   commit	Commit the application state
+   rollback	Roll back the application state to the latest commit
+   help, h	Shows a list of commands or help for one command
+   
+GLOBAL OPTIONS:
+   --address "tcp://127.0.0.1:46658"	address of application socket
+   --help, -h				show help
+   --version, -v			print the version
+```
 
 The `tmsp` tool lets us send tmsp messages to our application, to help build and debug them.
 
-As you can see, the TMSP API has more than the four messages outlined above, 
+As you can see, the TMSP API has more than the four messages outlined above 
 for convenience, configuration, and information purposes, but it remains quite general.
 
 Let's start a dummy application:
@@ -98,11 +126,15 @@ tmsp info
 ```
 
 A TMSP application must provide two things:
+
 	- a socket server
 	- a handler for TMSP messages
 
+When we run the `tmsp` tool we open a new connection to the application's socket server, 
+send the given tmsp message, and wait for a response.
+
 The server may be generic for a particular language, and we provide one for golang in `tmsp/server`.
-There is one for python in `example/python/tmsp/server.py`, but it needs work.
+There is one for python in `example/python/tmsp/server.py`, but it could use more love.
 
 The handler is specific to the application, and may be arbitrary, 
 so long as it is deterministic and conforms to the TMSP interface specification.
@@ -115,11 +147,12 @@ server.StartListener("tcp://0.0.0.0:46658", example.NewDummyApplication())
 
 Where `example.NewDummyApplication()` has methods for each of the TMSP messages and `server` handles everything else.
 
-See the dummy app in `example/golang/dummy.go`. It simple adds transaction bytes to a merkle tree, hashing when we call `get_hash` and saving when we call `commit`.
+See the dummy app in `example/golang/dummy.go`. It simply adds transaction bytes to a merkle tree, hashing when we call `get_hash` and saving when we call `commit`.
 
 So when we run `tmsp info`, we open a new connection to the tmsp server, which calls the `Info()` method on the application, which tells us the number of transactions in our merlke tree.
 
-Now, since every command opens a new connection, we provide the `tmsp console` and `tmsp batch` commands.
+Now, since every command opens a new connection, we provide the `tmsp console` and `tmsp batch` commands, 
+to allow multiple TMSP messages on a single connection.
 
 Running `tmsp console` should drop you in an interactive console for speaking TMSP messages to your application.
 
@@ -144,6 +177,8 @@ This application has two modes: `serial=off` and `serial=on`.
 
 When `serial=on`, transactions must be a big-endian encoded incrementing integer, starting at 0.
 
+We can toggle the value of `serial` using the `set_option` TMSP message.
+
 Let's kill the console and the dummy application, and start the counter app:
 
 ```
@@ -156,7 +191,7 @@ Again, the code is just
 server.StartListener("tcp://0.0.0.0:46658", example.NewCounterApplication())
 ```
 
-where the CounterApplication is defined in `example/golang/counter.go`.
+where the CounterApplication is defined in `example/golang/counter.go`, and implements the TMSP application interface.
 
 In another window, start the `tmsp console`:
 
@@ -189,52 +224,47 @@ python app.py
 ```
 
 (you'll have to kill the other counter application process). 
-In another window, run the console and those previous commands. 
-You should get the same results.
+In another window, run the console and those previous tmsp commands. 
+You should get the same results as for the golang version.
 
 Want to write the counter app in your favorite language?! We'd be happy to accept the pull request.
 
 Before continuing, please kill the `python app.py` process.
+
+TODO: write it in javascript
 
 # Tendermint
 
 Now that we've seen how TMSP works, and even played with a few applications using the `tmsp` tool,
 let's run an actual tendermint node.
 
-First, some config files. Save the following in `~/.tendermint`:
+When running a live application, a tendermint node takes the place of the `tmsp` tool by sending TMSP requests
+to the application: `append_tx` when transactions are received by the mempool, `commit` when the consensus protocol commits a new block, and so on.
 
-genesis.json
-
-```
-{"chain_id": "mychain","validators": [{"pub_key": [1,"3D528E80F0635F1ABB992CDDAC653107E216283D4FBD20C8B1E8C2B9ED2A1877"],"amount": 1000}]}
-```
-
-priv_validator.json
-
-```
-{"address":"773B908D26E254EECD3BB2FE8346396BFABD51AE","pub_key":[1,"3D528E80F0635F1ABB992CDDAC653107E216283D4FBD20C8B1E8C2B9ED2A1877"],"priv_key":[1,"24701186281CD9D97E2324189BCF7714454F6C0C2EB19DE5CF934996C54C4DA83D528E80F0635F1ABB992CDDAC653107E216283D4FBD20C8B1E8C2B9ED2A1877"],"last_height":0,"last_round":0,"last_step":0}
-```
-
-config.toml
-
-```
-proxy_app = "tcp://127.0.0.1:46658"
-moniker = "anonymous"
-node_laddr = "0.0.0.0:46656"
-seeds = ""
-fast_sync = false
-db_backend = "leveldb"
-log_level = "debug"
-rpc_laddr = "0.0.0.0:46657"
-```
-
-Now, install tendermint:
+Installing tendermint is easy:
 
 ```
 go get github.com/tendermint/tendermint/cmd/tendermint
 ```
 
-And run 
+If you already have tendermint installed, then you can either set a new `$GOPATH` and run the previous command,
+or else fetch and checkout the latest master branch in `$GOPATH/src/github.com/tendermint/tendermint`,
+and from that directory run
+
+```
+go get ./cmd/tendermint
+go install ./cmd/tendermint
+```
+
+To initialize a genesis and validator key in `~/.tendermint`, run
+
+```
+tendermint init
+```
+
+You can change the directory by setting the `$TMROOT` environment variable.
+
+Now,
 
 ```
 tendermint node
@@ -242,7 +272,7 @@ tendermint node
 
 You should see `Failed to connect to proxy for mempool: dial tcp 127.0.0.1:46658: getsockopt: connection refused`
 
-That's because we don't have an application process running, and tendermint will only run if there's an application to talk TMSP to.
+That's because we don't have an application process running, and tendermint will only run if there's an application it can speak TMSP with.
 
 So lets start the dummy app,
 
@@ -250,16 +280,47 @@ So lets start the dummy app,
 dummy
 ```
 
-and in anotheer window, start tendermint:
+and in another window, start tendermint:
 
 ```
 tendermint node
 ```
 
-You should start seeing blocks stream in!
+After a few seconds you should see blocks start streaming in!
 
-Now you can send transactions with curl requests, or from your browser!
+Now you can send transactions through the tendermint rpc server with curl requests, or from your browser:
+
+```
+curl http://localhost:46657/broadcast_tx?tx=\"abcd\"
+```
+
+For handling responses, we recommend you [install the `jq` tool](https://stedolan.github.io/jq/) to pretty print the JSON
+
+We can see the chain's status at the `/status` end-point:
+
+```
+curl http://localhost:46657/status |  jq .
+```
+
+and the `latest_app_hash` in particular:
+
+```
+curl http://localhost:46657/status |  jq . | grep app_hash
+```
+
+visit http://localhost:46657 in your browser to see the other endpoints.
 
 
-TODO: expose application hash through /status.
-TODO: expose TMSP info through rpc
+# Deploy a Tendermint Testnet
+
+Now that we've run a single tendermint node with one validator and a couple applications, 
+let's deploy a testnet to run our application with four validators.
+
+For this part of the tutorial, we assume you have an account at digital ocean and are willing to 
+pay to start some new droplets to run your nodes. You can of course stop and destroy them at any time.
+
+To deploy a testnet, use the `mintnet` tool:
+
+```
+go get github.com/tendermint/mintnet
+```
