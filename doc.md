@@ -4,8 +4,8 @@ Contents:
 
 - Motivation
 - TMSP Overview
-- Dummy TMSP Example (golang)
-- Another TMSP Example (in golang, python, javascript)
+- Dummy TMSP Example (in Go)
+- Another TMSP Example (in Go, Python, Javascript)
 - Running Tendermint 
 - Deploy a Tendermint Testnet
 
@@ -52,7 +52,7 @@ the new Tendermint, and her accomplice, the TMSP.
 
 # TMSP Overview
 
-The tendermint socket protocol (TMSP) is an asyncronous message passing protocol
+The Tendermint Socket Protocol (TMSP) is an asyncronous message passing protocol
 enabing a consensus engine, running in one process,
 to manage an application state, running in another.
 
@@ -78,7 +78,7 @@ Converesely, a `rollback` message tells the application to go back to the latest
 
 Ok, let's do an example.
 
-Make sure you [have golang installed](https://golang.org/doc/install) and put `$GOPATH/bin` on your `$PATH`.
+Make sure you [have Go installed](https://golang.org/doc/install) and put `$GOPATH/bin` on your `$PATH`.
 
 Install the tmsp tool and example applications:
 
@@ -134,7 +134,7 @@ When we run the `tmsp` tool we open a new connection to the application's socket
 send the given tmsp message, and wait for a response.
 
 The server may be generic for a particular language, and we provide one for golang in `tmsp/server`.
-There is one for python in `example/python/tmsp/server.py`, but it could use more love.
+There is one for Python in `example/python/tmsp/server.py`, but it could use more love.
 
 The handler is specific to the application, and may be arbitrary, 
 so long as it is deterministic and conforms to the TMSP interface specification.
@@ -216,7 +216,7 @@ Now, this is a very simple application, but between the counter and the dummy, i
 
 But the ultimate flexibility comes from being able to write the application easily in any language. 
 
-We have implemented the counter app in python:
+We have implemented the counter app in Python:
 
 ```
 cd example/python
@@ -231,23 +231,23 @@ Want to write the counter app in your favorite language?! We'd be happy to accep
 
 Before continuing, please kill the `python app.py` process.
 
-TODO: write it in javascript
+TODO: write it in Javascript
 
 # Tendermint
 
 Now that we've seen how TMSP works, and even played with a few applications using the `tmsp` tool,
-let's run an actual tendermint node.
+let's run an actual Tendermint node.
 
-When running a live application, a tendermint node takes the place of the `tmsp` tool by sending TMSP requests
+When running a live application, a Tendermint node takes the place of the `tmsp` tool by sending TMSP requests
 to the application: `append_tx` when transactions are received by the mempool, `commit` when the consensus protocol commits a new block, and so on.
 
-Installing tendermint is easy:
+Installing Tendermint is easy:
 
 ```
 go get github.com/tendermint/tendermint/cmd/tendermint
 ```
 
-If you already have tendermint installed, then you can either set a new `$GOPATH` and run the previous command,
+If you already have Tendermint installed, then you can either set a new `$GOPATH` and run the previous command,
 or else fetch and checkout the latest master branch in `$GOPATH/src/github.com/tendermint/tendermint`,
 and from that directory run
 
@@ -272,7 +272,7 @@ tendermint node
 
 You should see `Failed to connect to proxy for mempool: dial tcp 127.0.0.1:46658: getsockopt: connection refused`
 
-That's because we don't have an application process running, and tendermint will only run if there's an application it can speak TMSP with.
+That's because we don't have an application process running, and Tendermint will only run if there's an application it can speak TMSP with.
 
 So lets start the dummy app,
 
@@ -280,7 +280,7 @@ So lets start the dummy app,
 dummy
 ```
 
-and in another window, start tendermint:
+and in another window, start Tendermint:
 
 ```
 tendermint node
@@ -288,7 +288,7 @@ tendermint node
 
 After a few seconds you should see blocks start streaming in!
 
-Now you can send transactions through the tendermint rpc server with curl requests, or from your browser:
+Now you can send transactions through the Tendermint RPC server with curl requests, or from your browser:
 
 ```
 curl http://localhost:46657/broadcast_tx?tx=\"abcd\"
@@ -313,7 +313,7 @@ visit http://localhost:46657 in your browser to see the other endpoints.
 
 # Deploy a Tendermint Testnet
 
-Now that we've run a single tendermint node with one validator and a couple applications, 
+Now that we've run a single Tendermint node with one validator and a couple applications, 
 let's deploy a testnet to run our application with four validators.
 
 For this part of the tutorial, we assume you have an account at digital ocean and are willing to 
@@ -324,3 +324,4 @@ To deploy a testnet, use the `mintnet` tool:
 ```
 go get github.com/tendermint/mintnet
 ```
+
