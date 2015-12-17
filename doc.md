@@ -11,44 +11,17 @@ Contents:
 
 # Motivation
 
-After many months of fussing around with blockchain design, 
-it became increasingly apparent that a restructuring was in order which would 
-provide a greater separation of concerns.
+Thus far, all blockchains have had a monolithic design.  That is, each blockchain app is a single program that handles all the concerns of a decentralized ledger; this includes P2P connectivity, the "mempool" broadcasting of transactions, consensus on the most recent block, account balances, Turing-complete contracts, user-level permissions, etc.
 
-In particular, there are quite clearly two elements of a blockchain: 
-the consensus engine (a network protocol facilitating an eventual strict ordering on transactions)
-and the application state (account balances, storage, unspent outputs, contracts, etc.).
-In fact, these two elements are present in many (all?!) popular internet services today.
+This approach to blockchain development has several problems, two of which will be mentioned here.  The first problem is that creating a new blockchain app requires forking an existing blockchain "stack" (such as [Bitcoin](https://github.com/bitcoin/bitcoin)), and this comes with the cost of complexity.  First you need to understand all the components of a blockchain stack, even those that aren't directly relevant to the logic of your application.  This is especially true when the codebase is not modular in design and suffers from "spaghetti code".
 
-What is unique about blockchains, as pioneered by Bitcoin,
-in comparison to any other internet application sitting above a consensus engine, 
-is the way in which the application state directly incentivizes the consensus, 
-through inflation and fees, and the alleged possibilities for economic decentralization therein.
+The second problem to this approach is that it limits you to the language of the blockchain stack (or vice versa).  In the case of Ethereum which supports a Turing-complete bytecode virtual-machine, it limits you to languages that compile down to that bytecode; today, those are Serpent and Solidity.
 
-Bitcoin's success, however, be it as it may dependent on economic decentralization,
-has marshalled a growing appreciation in finance and industry for 
-its other characteristic features: transparency, accountability, and identity via strong cryptography. 
+If we could only split a blockchain into two so that a standalone application speaks to the rest of the blockchain via a language-agnostic socket protocol, we wouldn't be limited in this way.  Lo and behold, TMSP is that socket protocol.  Implementing TMSP is the easiest way to develop a new blockchain app.  You don't need to fork a whole blockchain stack, and you can program your application in any language.
 
-No doubt, those features are further supported, even nurtured, by economic decentralization, 
-but they are present too without it, 
-motivated and nurtured by the inherent decentralized aspects of the culture of open source itself, 
-which is, some may sometimes forget, orders of magnitude bigger than Bitcoin, and growing rapidly.
+The other half of TMSP is the [Tendermint Core](https://github.com/tendermint/tendermint) program (the "consensus provider").  Tendermint Core speaks to your TMSP application via a socket connection to empower your application with the best propoerties of blockchains, including optimal Byzantine fault-tolerant consensus, P2P connectivity, transaction mempool, blockchain storage, and more.  Of course, you're not limited to Tendermint Core.  In the future there will likely be different implementations of consensus providers that you can pair your application with.  You're not locked in to Tendermint Core with TMSP. 
 
-Hence we have been inspired to take the defining feature of a blockchain -
-direct incentivation of the consensus by the application state - and remove it completely,
-in order to achieve a separation of concerns between the consensus and the application that 
-will give us tremendous flexibility.
-
-Of course, we intend over time to bring back the incentivization layer, 
-but to do it in a manner which is motivated more directly by the needs and use cases of the technology's users.
-
-In the meantime, we have an open source platform which can support up to 10,000 transactions per second, 
-which is Byzantine Fault Tolerant, which uses state-of-the-art digital signatures,
-which has a robust and secure networking layer, 
-and which can run applications written in arbitrary programming languages.
-
-Ladies and gentlement (and everyone inbetween), we are pleased to introduce, 
-the new Tendermint, and her accomplice, the TMSP.
+As an added benefit, designing your blockchain app to support TMSP is a great way to make your application logic more modular and testable.
 
 # TMSP Overview
 
