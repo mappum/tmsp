@@ -14,7 +14,7 @@ type Application interface {
 	SetOption(key string, value string) (log string)
 
 	// Append a tx
-	AppendTx(tx []byte) Result
+	DeliverTx(tx []byte) Result
 
 	// Validate a tx for the mempool
 	CheckTx(tx []byte) Result
@@ -67,9 +67,9 @@ func (app *GRPCApplication) SetOption(ctx context.Context, req *RequestSetOption
 	return &ResponseSetOption{app.app.SetOption(req.Key, req.Value)}, nil
 }
 
-func (app *GRPCApplication) AppendTx(ctx context.Context, req *RequestAppendTx) (*ResponseAppendTx, error) {
-	r := app.app.AppendTx(req.Tx)
-	return &ResponseAppendTx{r.Code, r.Data, r.Log}, nil
+func (app *GRPCApplication) DeliverTx(ctx context.Context, req *RequestDeliverTx) (*ResponseDeliverTx, error) {
+	r := app.app.DeliverTx(req.Tx)
+	return &ResponseDeliverTx{r.Code, r.Data, r.Log}, nil
 }
 
 func (app *GRPCApplication) CheckTx(ctx context.Context, req *RequestCheckTx) (*ResponseCheckTx, error) {
