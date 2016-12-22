@@ -167,9 +167,8 @@ message ResponseFlush{
 message ResponseInfo {
 	string info = 1; // backwards compatible
 
-	TMSPInfo tmsp_info = 2;
-	LastBlockInfo last_block = 3;
-	ConfigInfo config = 4;
+	LastBlockInfo last_block = 2;
+	ConfigInfo config = 3;
 }
 
 message ResponseSetOption{
@@ -213,10 +212,6 @@ message ResponseEndBlock{
 
 //----------------------------------------
 // Info types 
-
-message TMSPInfo {
-	string Version = 1;
-}
 
 message LastBlockInfo {
 	uint64 block_height = 1;

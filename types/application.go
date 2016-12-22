@@ -8,7 +8,7 @@ import (
 type Application interface {
 
 	// Return application info
-	Info() (string, *TMSPInfo, *LastBlockInfo, *ConfigInfo)
+	Info() (string, *LastBlockInfo, *ConfigInfo)
 
 	// Set application option (e.g. mode=mempool, mode=consensus)
 	SetOption(key string, value string) (log string)
@@ -59,8 +59,8 @@ func (app *GRPCApplication) Flush(ctx context.Context, req *RequestFlush) (*Resp
 }
 
 func (app *GRPCApplication) Info(ctx context.Context, req *RequestInfo) (*ResponseInfo, error) {
-	info, tmspInfo, blockInfo, configInfo := app.app.Info()
-	return &ResponseInfo{info, tmspInfo, blockInfo, configInfo}, nil
+	info, blockInfo, configInfo := app.app.Info()
+	return &ResponseInfo{info, blockInfo, configInfo}, nil
 }
 
 func (app *GRPCApplication) SetOption(ctx context.Context, req *RequestSetOption) (*ResponseSetOption, error) {

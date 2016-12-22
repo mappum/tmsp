@@ -11,7 +11,7 @@ func NewNilApplication() *NilApplication {
 	return &NilApplication{}
 }
 
-func (app *NilApplication) Info() (string, *types.TMSPInfo, *types.LastBlockInfo, *types.ConfigInfo) {
+func (app *NilApplication) Info() (string, *types.LastBlockInfo, *types.ConfigInfo) {
 	return "nil", nil, nil, nil
 }
 

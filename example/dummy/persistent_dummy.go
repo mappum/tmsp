@@ -46,10 +46,10 @@ func NewPersistentDummyApplication(dbDir string) *PersistentDummyApplication {
 	}
 }
 
-func (app *PersistentDummyApplication) Info() (string, *types.TMSPInfo, *types.LastBlockInfo, *types.ConfigInfo) {
-	s, _, _, _ := app.app.Info()
+func (app *PersistentDummyApplication) Info() (string, *types.LastBlockInfo, *types.ConfigInfo) {
+	s, _, _ := app.app.Info()
 	lastBlock := LoadLastBlock(app.db)
-	return s, nil, &lastBlock, nil
+	return s, &lastBlock, nil
 }
 
 func (app *PersistentDummyApplication) SetOption(key string, value string) (log string) {

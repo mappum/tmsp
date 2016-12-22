@@ -36,7 +36,7 @@ func NewChainAwareApplication() *ChainAwareApplication {
 	return &ChainAwareApplication{}
 }
 
-func (app *ChainAwareApplication) Info() (string, *types.TMSPInfo, *types.LastBlockInfo, *types.ConfigInfo) {
+func (app *ChainAwareApplication) Info() (string, *types.LastBlockInfo, *types.ConfigInfo) {
 	return "nil", nil, nil, nil
 }
 

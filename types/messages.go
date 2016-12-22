@@ -93,9 +93,9 @@ func ToResponseFlush() *Response {
 	}
 }
 
-func ToResponseInfo(info string, tmspInfo *TMSPInfo, blockInfo *LastBlockInfo, configInfo *ConfigInfo) *Response {
+func ToResponseInfo(info string, blockInfo *LastBlockInfo, configInfo *ConfigInfo) *Response {
 	return &Response{
-		Value: &Response_Info{&ResponseInfo{info, tmspInfo, blockInfo, configInfo}},
+		Value: &Response_Info{&ResponseInfo{info, blockInfo, configInfo}},
 	}
 }
 
