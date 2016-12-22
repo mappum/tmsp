@@ -10,18 +10,18 @@ import (
 	"strings"
 
 	. "github.com/tendermint/go-common"
-	"github.com/tendermint/tmsp/client"
-	"github.com/tendermint/tmsp/types"
+	"github.com/tendermint/abci/client"
+	"github.com/tendermint/abci/types"
 	"github.com/urfave/cli"
 )
 
 // client is a global variable so it can be reused by the console
-var client tmspcli.Client
+var client abcicli.Client
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "tmsp-cli"
-	app.Usage = "tmsp-cli [command] [args...]"
+	app.Name = "abci-cli"
+	app.Usage = "abci-cli [command] [args...]"
 	app.Version = "0.2.1" // better error handling in console
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -30,7 +30,7 @@ func main() {
 			Usage: "address of application socket",
 		},
 		cli.StringFlag{
-			Name:  "tmsp",
+			Name:  "abci",
 			Value: "socket",
 			Usage: "socket or grpc",
 		},
@@ -42,14 +42,14 @@ func main() {
 	app.Commands = []cli.Command{
 		{
 			Name:  "batch",
-			Usage: "Run a batch of tmsp commands against an application",
+			Usage: "Run a batch of abci commands against an application",
 			Action: func(c *cli.Context) error {
 				return cmdBatch(app, c)
 			},
 		},
 		{
 			Name:  "console",
-			Usage: "Start an interactive tmsp console for multiple commands",
+			Usage: "Start an interactive abci console for multiple commands",
 			Action: func(c *cli.Context) error {
 				return cmdConsole(app, c)
 			},
@@ -115,7 +115,7 @@ func main() {
 func before(c *cli.Context) error {
 	if client == nil {
 		var err error
-		client, err = tmspcli.NewClient(c.GlobalString("address"), c.GlobalString("tmsp"), false)
+		client, err = abcicli.NewClient(c.GlobalString("address"), c.GlobalString("abci"), false)
 		if err != nil {
 			Exit(err.Error())
 		}
@@ -146,7 +146,7 @@ func cmdBatch(app *cli.App, c *cli.Context) error {
 		} else if err != nil {
 			return err
 		}
-		args := []string{"tmsp-cli"}
+		args := []string{"abci-cli"}
 		if c.GlobalBool("verbose") {
 			args = append(args, "--verbose")
 		}
@@ -169,7 +169,7 @@ func cmdConsole(app *cli.App, c *cli.Context) error {
 			return err
 		}
 
-		args := []string{"tmsp-cli"}
+		args := []string{"abci-cli"}
 		args = append(args, strings.Split(string(line), " ")...)
 		if err := app.Run(args); err != nil {
 			// if the command doesn't succeed, inform the user without exiting
