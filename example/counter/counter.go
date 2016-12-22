@@ -17,7 +17,7 @@ func NewCounterApplication(serial bool) *CounterApplication {
 	return &CounterApplication{serial: serial}
 }
 
-func (app *CounterApplication) Info() (string, *types.LastBlockInfo, *types.ConfigInfo) {
+func (app *CounterApplication) Info() (string, *types.StateInfo, *types.ConfigInfo) {
 	return Fmt("{\"hashes\":%v,\"txs\":%v}", app.hashCount, app.txCount), nil, nil
 }
 

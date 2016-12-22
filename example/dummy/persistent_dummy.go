@@ -46,7 +46,7 @@ func NewPersistentDummyApplication(dbDir string) *PersistentDummyApplication {
 	}
 }
 
-func (app *PersistentDummyApplication) Info() (string, *types.LastBlockInfo, *types.ConfigInfo) {
+func (app *PersistentDummyApplication) Info() (string, *types.StateInfo, *types.ConfigInfo) {
 	s, _, _ := app.app.Info()
 	lastBlock := LoadLastBlock(app.db)
 	return s, &lastBlock, nil
@@ -79,7 +79,7 @@ func (app *PersistentDummyApplication) Commit() types.Result {
 	appHash := app.app.state.Save()
 	log.Info("Saved state", "root", appHash)
 
-	lastBlock := types.LastBlockInfo{
+	lastBlock := types.StateInfo{
 		BlockHeight: app.blockHeader.Height,
 		AppHash:     appHash, // this hash will be in the next block header
 	}
@@ -121,7 +121,7 @@ func (app *PersistentDummyApplication) EndBlock(height uint64) (diffs []*types.V
 var lastBlockKey = []byte("lastblock")
 
 // Get the last block from the db
-func LoadLastBlock(db dbm.DB) (lastBlock types.LastBlockInfo) {
+func LoadLastBlock(db dbm.DB) (lastBlock types.StateInfo) {
 	buf := db.Get(lastBlockKey)
 	if len(buf) != 0 {
 		r, n, err := bytes.NewReader(buf), new(int), new(error)
@@ -136,7 +136,7 @@ func LoadLastBlock(db dbm.DB) (lastBlock types.LastBlockInfo) {
 	return lastBlock
 }
 
-func SaveLastBlock(db dbm.DB, lastBlock types.LastBlockInfo) {
+func SaveLastBlock(db dbm.DB, lastBlock types.StateInfo) {
 	log.Notice("Saving block", "height", lastBlock.BlockHeight, "root", lastBlock.AppHash)
 	buf, n, err := new(bytes.Buffer), new(int), new(error)
 	wire.WriteBinary(lastBlock, buf, n, err)

@@ -292,14 +292,14 @@ func (cli *socketClient) FlushSync() error {
 	return cli.Error()
 }
 
-func (cli *socketClient) InfoSync() (types.Result, *types.LastBlockInfo, *types.ConfigInfo) {
+func (cli *socketClient) InfoSync() (types.Result, *types.StateInfo, *types.ConfigInfo) {
 	reqres := cli.queueRequest(types.ToRequestInfo())
 	cli.FlushSync()
 	if err := cli.Error(); err != nil {
 		return types.ErrInternalError.SetLog(err.Error()), nil, nil
 	}
 	resp := reqres.Response.GetInfo()
-	return types.Result{Code: OK, Data: []byte(resp.Info), Log: LOG}, resp.LastBlock, resp.Config
+	return types.Result{Code: OK, Data: []byte(resp.Info), Log: LOG}, resp.State, resp.Config
 }
 
 func (cli *socketClient) SetOptionSync(key string, value string) (res types.Result) {

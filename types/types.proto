@@ -167,7 +167,7 @@ message ResponseFlush{
 message ResponseInfo {
 	string info = 1; // backwards compatible
 
-	LastBlockInfo last_block = 2;
+	StateInfo state = 2;
 	ConfigInfo config = 3;
 }
 
@@ -213,7 +213,7 @@ message ResponseEndBlock{
 //----------------------------------------
 // Info types 
 
-message LastBlockInfo {
+message StateInfo {
 	uint64 block_height = 1;
 	bytes app_hash = 2;
 }

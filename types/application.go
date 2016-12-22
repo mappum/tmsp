@@ -8,7 +8,7 @@ import (
 type Application interface {
 
 	// Return application info
-	Info() (string, *LastBlockInfo, *ConfigInfo)
+	Info() (string, *StateInfo, *ConfigInfo)
 
 	// Set application option (e.g. mode=mempool, mode=consensus)
 	SetOption(key string, value string) (log string)

@@ -18,7 +18,7 @@ func NewDummyApplication() *DummyApplication {
 	return &DummyApplication{state: state}
 }
 
-func (app *DummyApplication) Info() (string, *types.LastBlockInfo, *types.ConfigInfo) {
+func (app *DummyApplication) Info() (string, *types.StateInfo, *types.ConfigInfo) {
 	return Fmt("{\"size\":%v}", app.state.Size()), nil, nil
 }
 

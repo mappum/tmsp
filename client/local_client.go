@@ -157,7 +157,7 @@ func (app *localClient) EchoSync(msg string) (res types.Result) {
 	return types.OK.SetData([]byte(msg))
 }
 
-func (app *localClient) InfoSync() (types.Result, *types.LastBlockInfo, *types.ConfigInfo) {
+func (app *localClient) InfoSync() (types.Result, *types.StateInfo, *types.ConfigInfo) {
 	app.mtx.Lock()
 	defer app.mtx.Unlock()
 	info, blockInfo, configInfo := app.Application.Info()

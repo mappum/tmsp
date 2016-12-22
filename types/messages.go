@@ -93,7 +93,7 @@ func ToResponseFlush() *Response {
 	}
 }
 
-func ToResponseInfo(info string, blockInfo *LastBlockInfo, configInfo *ConfigInfo) *Response {
+func ToResponseInfo(info string, blockInfo *StateInfo, configInfo *ConfigInfo) *Response {
 	return &Response{
 		Value: &Response_Info{&ResponseInfo{info, blockInfo, configInfo}},
 	}

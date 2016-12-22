@@ -25,7 +25,7 @@ type Client interface {
 
 	FlushSync() error
 	EchoSync(msg string) (res types.Result)
-	InfoSync() (types.Result, *types.LastBlockInfo, *types.ConfigInfo)
+	InfoSync() (types.Result, *types.StateInfo, *types.ConfigInfo)
 	SetOptionSync(key string, value string) (res types.Result)
 	AppendTxSync(tx []byte) (res types.Result)
 	CheckTxSync(tx []byte) (res types.Result)
